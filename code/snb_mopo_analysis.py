@@ -299,28 +299,28 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
     C_IMP    = "#27AE60"    # green        – implementation date
 
     # ── plotting order ensures all lines are visible ──────────────────────────
-    # 1. SARON first (thinnest, goes in background of rates)
-    ax1.plot(d["date"], d["SARON"],
-             color=C_SARON, linewidth=1.1, alpha=0.85, zorder=2,
-             label="SARON fixing at the close of the trading day")
-
-    # 2. Rate above threshold — solid, mid-weight
-    ax1.plot(d["date"], d["ZIG"],
-             color=C_TIER, linewidth=2.0, linestyle="-", zorder=3,
-             label="Interest rate on sight deposits above threshold")
-
-    # 3. Rate up to threshold — same colour, dashed, drawn on top so dashes
-    #    remain visible even when the value equals the policy rate
-    ax1.plot(d["date"], d["ZIGBL"],
-             color=C_TIER, linewidth=2.0, linestyle=(0, (6, 3)), zorder=4,
-             label="Interest rate on sight deposits up to threshold")
-
-    # 4. SNB policy rate — charcoal solid, thickest; drawn last so it is never
-    #    hidden but its colour is distinct from both tier lines
+    # 1. SNB policy rate — drawn first (lowest zorder among rates) and
+    #    semi-transparent so SARON and tier lines remain readable on top of it
     lz_mask = d["LZ"].notna()
     ax1.plot(d.loc[lz_mask, "date"], d.loc[lz_mask, "LZ"],
-             color=C_POLICY, linewidth=2.8, linestyle="-", zorder=5,
+             color=C_POLICY, linewidth=3.5, linestyle="-", alpha=0.35, zorder=2,
              label="SNB policy rate (from Jun 2019)")
+
+    # 2. Rate above threshold — long dashes
+    ax1.plot(d["date"], d["ZIG"],
+             color=C_TIER, linewidth=2.0, linestyle=(0, (8, 3)), zorder=3,
+             label="Interest rate on sight deposits above threshold")
+
+    # 3. Rate up to threshold — short dashes (same colour, distinct pattern)
+    ax1.plot(d["date"], d["ZIGBL"],
+             color=C_TIER, linewidth=2.0, linestyle=(0, (3, 2)), zorder=4,
+             label="Interest rate on sight deposits up to threshold")
+
+    # 4. SARON — drawn last among LHS series; bright amber, fully opaque so it
+    #    shows through the transparent policy-rate band
+    ax1.plot(d["date"], d["SARON"],
+             color=C_SARON, linewidth=1.4, alpha=1.0, zorder=5,
+             label="SARON fixing at the close of the trading day")
 
     # ── threshold factor (RHS) ───────────────────────────────────────────────
     ax2.plot(d["date"], d["FREI"],
@@ -332,10 +332,11 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
     ann_dates  = sorted(set(decisions.loc[dec_mask, "announce_date"]))
     impl_dates = sorted(set(decisions.loc[dec_mask, "implement_date"]))
 
+    # Both event lines dashed, but with distinct dash patterns
     for ad in ann_dates:
-        ax1.axvline(ad,  color=C_ANN, linewidth=0.85, linestyle="--", alpha=0.55, zorder=1)
+        ax1.axvline(ad,  color=C_ANN, linewidth=0.9, linestyle=(0, (8, 4)), alpha=0.60, zorder=1)
     for id_ in impl_dates:
-        ax1.axvline(id_, color=C_IMP, linewidth=0.85, linestyle="-",  alpha=0.45, zorder=1)
+        ax1.axvline(id_, color=C_IMP, linewidth=0.9, linestyle=(0, (3, 3)), alpha=0.55, zorder=1)
 
     # ── zero reference ───────────────────────────────────────────────────────
     ax1.axhline(0, color="black", linewidth=0.6, linestyle="-", alpha=0.30, zorder=1)
@@ -373,9 +374,9 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
     handles2, labels2 = ax2.get_legend_handles_labels()
 
     ann_line  = mlines.Line2D([], [], color=C_ANN, linewidth=1.3,
-                               linestyle="--", label="Announcement date")
+                               linestyle=(0, (8, 4)), label="Announcement date")
     impl_line = mlines.Line2D([], [], color=C_IMP, linewidth=1.3,
-                               linestyle="-",  label="Implementation date")
+                               linestyle=(0, (3, 3)), label="Implementation date")
 
     all_handles = [h for h, _ in pairs1] + handles2 + [ann_line, impl_line]
     all_labels  = [l for _, l in pairs1] + labels2  + \
