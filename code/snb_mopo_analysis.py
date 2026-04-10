@@ -332,9 +332,9 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
     #   announcement  → long dashes  (8 on, 4 off)
     #   implementation → short dashes (3 on, 3 off)
     TYPE_COLOR = {
-        "rate_change": C_POLICY,
-        "rate_intro":  C_POLICY,
-        "frei_change": C_FREI,
+        "rate_change": C_TIER,    # steel blue – matches rate lines
+        "rate_intro":  C_POLICY,  # charcoal   – matches policy-rate line
+        "frei_change": C_FREI,    # purple     – matches threshold-factor line
     }
     DASH_ANN  = (0, (8, 4))
     DASH_IMPL = (0, (3, 3))
@@ -396,8 +396,10 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
         return mlines.Line2D([], [], color=color, linewidth=1.3, linestyle=ls, label=label)
 
     event_handles = [
-        vline(C_POLICY, (0, (8, 4)), "Rate change – announcement"),
-        vline(C_POLICY, (0, (3, 3)), "Rate change – implementation"),
+        vline(C_TIER,   (0, (8, 4)), "Rate change – announcement"),
+        vline(C_TIER,   (0, (3, 3)), "Rate change – implementation"),
+        vline(C_POLICY, (0, (8, 4)), "Policy rate introduction – announcement"),
+        vline(C_POLICY, (0, (3, 3)), "Policy rate introduction – implementation"),
         vline(C_FREI,   (0, (8, 4)), "Factor change – announcement"),
         vline(C_FREI,   (0, (3, 3)), "Factor change – implementation"),
     ]
