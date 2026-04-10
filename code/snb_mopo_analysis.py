@@ -286,39 +286,46 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
     ax2 = ax1.twinx()
 
     # ── colour palette ───────────────────────────────────────────────────────
-    # Rates (LHS)
-    C_POLICY = "#003366"    # dark navy        – SNB policy rate / rate above threshold
-    C_BELOW  = "#4C9BE8"    # medium sky-blue  – rate up to threshold
-    C_SARON  = "#E07B00"    # vivid amber      – SARON (strong, distinct)
-    # RHS series
-    C_FREI   = "#6A0DAD"    # purple/violet    – threshold factor (clearly different from lines below)
+    # Policy rate: distinct charcoal — its own conceptual category
+    C_POLICY = "#2C2C2C"    # near-black / charcoal – SNB policy rate
+    # Above / below threshold: same steel-blue family, differ only in line style
+    C_TIER   = "#1F6FB2"    # steel blue – both tiered remuneration rates
+    # SARON
+    C_SARON  = "#E07B00"    # vivid amber – SARON
+    # RHS
+    C_FREI   = "#6A0DAD"    # purple – threshold factor
     # Vertical event lines
-    C_ANN    = "#C0392B"    # strong red       – announcement date
-    C_IMP    = "#27AE60"    # green            – implementation date
+    C_ANN    = "#C0392B"    # strong red   – announcement date
+    C_IMP    = "#27AE60"    # green        – implementation date
 
-    # ── rates (LHS) — SNB English variable names ──────────────────────────
+    # ── plotting order ensures all lines are visible ──────────────────────────
+    # 1. SARON first (thinnest, goes in background of rates)
     ax1.plot(d["date"], d["SARON"],
-             color=C_SARON, linewidth=1.2, alpha=0.85,
-             label="SARON fixing at the close of the trading day", zorder=2)
+             color=C_SARON, linewidth=1.1, alpha=0.85, zorder=2,
+             label="SARON fixing at the close of the trading day")
 
+    # 2. Rate above threshold — solid, mid-weight
     ax1.plot(d["date"], d["ZIG"],
-             color=C_POLICY, linewidth=2.2,
-             label="Interest rate on sight deposits above threshold", zorder=4)
+             color=C_TIER, linewidth=2.0, linestyle="-", zorder=3,
+             label="Interest rate on sight deposits above threshold")
 
+    # 3. Rate up to threshold — same colour, dashed, drawn on top so dashes
+    #    remain visible even when the value equals the policy rate
     ax1.plot(d["date"], d["ZIGBL"],
-             color=C_BELOW, linewidth=1.8, linestyle="--",
-             label="Interest rate on sight deposits up to threshold", zorder=3)
+             color=C_TIER, linewidth=2.0, linestyle=(0, (6, 3)), zorder=4,
+             label="Interest rate on sight deposits up to threshold")
 
-    # SNB policy rate (formally introduced Jun 2019; shown as dash-dot overlay)
+    # 4. SNB policy rate — charcoal solid, thickest; drawn last so it is never
+    #    hidden but its colour is distinct from both tier lines
     lz_mask = d["LZ"].notna()
     ax1.plot(d.loc[lz_mask, "date"], d.loc[lz_mask, "LZ"],
-             color=C_POLICY, linewidth=2.8, linestyle=(0, (5, 1)),
-             label="SNB policy rate (from Jun 2019)", zorder=5)
+             color=C_POLICY, linewidth=2.8, linestyle="-", zorder=5,
+             label="SNB policy rate (from Jun 2019)")
 
     # ── threshold factor (RHS) ───────────────────────────────────────────────
     ax2.plot(d["date"], d["FREI"],
-             color=C_FREI, linewidth=1.6, linestyle=":",
-             label="Threshold factor (rhs)", zorder=3)
+             color=C_FREI, linewidth=1.6, linestyle=":", zorder=3,
+             label="Threshold factor (rhs)")
 
     # ── vertical event lines ─────────────────────────────────────────────────
     dec_mask   = decisions["announce_date"] >= pd.Timestamp(start)
@@ -331,7 +338,7 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
         ax1.axvline(id_, color=C_IMP, linewidth=0.85, linestyle="-",  alpha=0.45, zorder=1)
 
     # ── zero reference ───────────────────────────────────────────────────────
-    ax1.axhline(0, color="black", linewidth=0.6, linestyle="-", alpha=0.35, zorder=1)
+    ax1.axhline(0, color="black", linewidth=0.6, linestyle="-", alpha=0.30, zorder=1)
 
     # ── axis limits & ticks ──────────────────────────────────────────────────
     ax1.set_ylim(ylim_left)
@@ -352,16 +359,6 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
     ax1.tick_params(axis="x", which="major", labelsize=10)
     ax1.set_xlabel("Date", fontsize=10, labelpad=6)
 
-    # ── shaded phase regions ─────────────────────────────────────────────────
-    phases = [
-        ("2015-01-22", "2022-06-17", "#ddeef9", "Negative rate era"),
-        ("2022-06-17", "2025-06-20", "#e8f7e8", "Tightening / easing cycle"),
-        ("2025-06-20", str(d["date"].max().date()), "#fff5db", "Post-zero era"),
-    ]
-    for s, e, col, lbl in phases:
-        ax1.axvspan(pd.Timestamp(s), pd.Timestamp(e),
-                    alpha=0.18, color=col, zorder=0, label=f"_{lbl}")
-
     # ── title ────────────────────────────────────────────────────────────────
     ax1.set_title(
         "SNB Monetary Policy & Overnight Repo Market (SARON)\n"
@@ -371,8 +368,7 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
 
     # ── legend below the axes ────────────────────────────────────────────────
     handles1, labels1 = ax1.get_legend_handles_labels()
-    # Filter out phase-shading entries (prefixed with "_")
-    pairs1 = [(h, l) for h, l in zip(handles1, labels1) if not l.startswith("_")]
+    pairs1 = list(zip(handles1, labels1))
 
     handles2, labels2 = ax2.get_legend_handles_labels()
 
