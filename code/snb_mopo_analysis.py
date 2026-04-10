@@ -293,10 +293,7 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
     # SARON
     C_SARON  = "#E07B00"    # vivid amber – SARON
     # RHS
-    C_FREI   = "#6A0DAD"    # purple – threshold factor
-    # Vertical event lines
-    C_ANN    = "#C0392B"    # strong red   – announcement date
-    C_IMP    = "#27AE60"    # green        – implementation date
+    C_FREI   = "#6A0DAD"    # purple – threshold factor (also: factor-change verticals)
 
     # ── plotting order ensures all lines are visible ──────────────────────────
     # 1. SNB policy rate — drawn first (lowest zorder among rates) and
@@ -328,15 +325,36 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
              label="Threshold factor (rhs)")
 
     # ── vertical event lines ─────────────────────────────────────────────────
-    dec_mask   = decisions["announce_date"] >= pd.Timestamp(start)
-    ann_dates  = sorted(set(decisions.loc[dec_mask, "announce_date"]))
-    impl_dates = sorted(set(decisions.loc[dec_mask, "implement_date"]))
+    # Vertical lines coloured by event type, dashes distinguish announcement vs implementation
+    #   rate_change / rate_intro : charcoal  (same family as policy-rate line)
+    #   frei_change              : purple    (same as threshold-factor line)
+    # Dash patterns:
+    #   announcement  → long dashes  (8 on, 4 off)
+    #   implementation → short dashes (3 on, 3 off)
+    TYPE_COLOR = {
+        "rate_change": C_POLICY,
+        "rate_intro":  C_POLICY,
+        "frei_change": C_FREI,
+    }
+    DASH_ANN  = (0, (8, 4))
+    DASH_IMPL = (0, (3, 3))
 
-    # Both event lines dashed, but with distinct dash patterns
-    for ad in ann_dates:
-        ax1.axvline(ad,  color=C_ANN, linewidth=0.9, linestyle=(0, (8, 4)), alpha=0.60, zorder=1)
-    for id_ in impl_dates:
-        ax1.axvline(id_, color=C_IMP, linewidth=0.9, linestyle=(0, (3, 3)), alpha=0.55, zorder=1)
+    dec_sub = decisions[decisions["announce_date"] >= pd.Timestamp(start)]
+    seen_ann  = {}   # date → color already drawn (avoid duplicate lines same day)
+    seen_impl = {}
+
+    for _, row in dec_sub.iterrows():
+        col = TYPE_COLOR.get(row["event_type"], C_POLICY)
+
+        ad = row["announce_date"]
+        if (ad, col) not in seen_ann:
+            ax1.axvline(ad, color=col, linewidth=0.9, linestyle=DASH_ANN,  alpha=0.65, zorder=1)
+            seen_ann[(ad, col)] = True
+
+        id_ = row["implement_date"]
+        if (id_, col) not in seen_impl:
+            ax1.axvline(id_, color=col, linewidth=0.9, linestyle=DASH_IMPL, alpha=0.55, zorder=1)
+            seen_impl[(id_, col)] = True
 
     # ── zero reference ───────────────────────────────────────────────────────
     ax1.axhline(0, color="black", linewidth=0.6, linestyle="-", alpha=0.30, zorder=1)
@@ -373,14 +391,20 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
 
     handles2, labels2 = ax2.get_legend_handles_labels()
 
-    ann_line  = mlines.Line2D([], [], color=C_ANN, linewidth=1.3,
-                               linestyle=(0, (8, 4)), label="Announcement date")
-    impl_line = mlines.Line2D([], [], color=C_IMP, linewidth=1.3,
-                               linestyle=(0, (3, 3)), label="Implementation date")
+    # Legend proxies for vertical event lines (2 dash styles × 2 change types)
+    def vline(color, ls, label):
+        return mlines.Line2D([], [], color=color, linewidth=1.3, linestyle=ls, label=label)
 
-    all_handles = [h for h, _ in pairs1] + handles2 + [ann_line, impl_line]
+    event_handles = [
+        vline(C_POLICY, (0, (8, 4)), "Rate change – announcement"),
+        vline(C_POLICY, (0, (3, 3)), "Rate change – implementation"),
+        vline(C_FREI,   (0, (8, 4)), "Factor change – announcement"),
+        vline(C_FREI,   (0, (3, 3)), "Factor change – implementation"),
+    ]
+
+    all_handles = [h for h, _ in pairs1] + handles2 + event_handles
     all_labels  = [l for _, l in pairs1] + labels2  + \
-                  ["Announcement date", "Implementation date"]
+                  [h.get_label() for h in event_handles]
 
     fig.legend(
         handles=all_handles, labels=all_labels,
