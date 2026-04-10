@@ -1,0 +1,31 @@
+announce_date,implement_date,event_type,ZIG_new,LZ_new,FREI_new,label
+2014-12-18,2015-01-22,rate_change,-0.25,,20.0,"Neg. rates announced
+(−0.25 % / factor 20)"
+2015-01-15,2015-01-22,rate_change,-0.75,,,"EUR/CHF floor drop
+& cut to −0.75 %"
+2019-06-13,2019-06-13,rate_intro,,-0.75,,"SNB policy rate
+introduced (−0.75 %)"
+2019-09-19,2019-11-01,frei_change,,,25.0,Factor 20→25
+2020-03-19,2020-04-01,frei_change,,,30.0,"Factor 25→30
+(COVID)"
+2022-06-16,2022-06-17,rate_change,-0.25,-0.25,,+50 bp: −0.75→−0.25 %
+2022-06-16,2022-07-01,frei_change,,,28.0,Factor 30→28
+2022-09-22,2022-09-23,rate_change,0.0,0.5,,+75 bp: −0.25→+0.50 %
+2022-12-15,2022-12-16,rate_change,0.5,1.0,,+50 bp: 0.50→1.00 %
+2023-03-23,2023-03-24,rate_change,1.0,1.5,,+50 bp: 1.00→1.50 %
+2023-06-22,2023-06-23,rate_change,1.25,1.75,,+25 bp: 1.50→1.75 %
+2023-09-21,2023-12-01,frei_change,,,25.0,Factor 28→25
+2024-03-21,2024-03-22,rate_change,1.0,1.5,,−25 bp: 1.75→1.50 %
+2024-06-20,2024-06-21,rate_change,0.75,1.25,,−25 bp: 1.50→1.25 %
+2024-09-26,2024-09-27,rate_change,0.5,1.0,,−25 bp: 1.25→1.00 %
+2024-09-26,2024-10-01,frei_change,,,22.0,Factor 25→22
+2024-12-12,2024-12-13,rate_change,0.0,0.5,,−50 bp: 1.00→0.50 %
+2024-12-12,2025-02-03,frei_change,,,20.0,Factor 22→20
+2025-03-20,2025-03-21,rate_change,0.0,0.25,,−25 bp: 0.50→0.25 %
+2025-03-20,2025-06-02,frei_change,,,18.0,Factor 20→18
+2025-06-19,2025-06-20,rate_change,-0.25,0.0,,"−25 bp: 0.25→0.00 %
+(tiered re-introduced)"
+2025-09-18,2025-11-03,frei_change,,,16.5,Factor 18→16.5
+2025-12-11,2026-03-02,frei_change,,,15.0,Factor 16.5→15
+2026-03-19,2026-03-19,rate_change,-0.25,0.0,,"Rate unchanged
+(0.00 %)"
