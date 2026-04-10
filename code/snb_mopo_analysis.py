@@ -250,85 +250,99 @@ def build_policy_decisions() -> pd.DataFrame:
 
 def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
                 start: str = "2014-10-01",
+                ylim_left: tuple = (-1.0, 2.0),
                 save_path: str | None = None) -> plt.Figure:
     """
     State-of-the-art summary figure of SNB monetary policy since the tiered
     sight-deposit system was introduced in December 2014.
 
     Left y-axis  : interest rates in %  (SARON, ZIG, ZIGBL, LZ)
-    Right y-axis : threshold factor FREI (dimensionless)
+    Right y-axis : threshold factor (dimensionless)
     Vertical lines: announcement dates (dashed) / implementation dates (solid)
+    Legend       : placed below the plot area
+    Variable names follow SNB English-homepage terminology.
     """
     matplotlib.rcParams.update({
-        "font.family":    "sans-serif",
-        "font.sans-serif":["Helvetica Neue", "Helvetica", "Arial"],
-        "axes.spines.top":   False,
-        "axes.linewidth":    0.8,
-        "xtick.direction":   "out",
-        "ytick.direction":   "out",
-        "xtick.major.width": 0.8,
-        "ytick.major.width": 0.8,
-        "axes.grid":    True,
-        "grid.color":   "#DDDDDD",
+        "font.family":     "sans-serif",
+        "font.sans-serif": ["Helvetica Neue", "Helvetica", "Arial"],
+        "axes.spines.top":    False,
+        "axes.linewidth":     0.8,
+        "xtick.direction":    "out",
+        "ytick.direction":    "out",
+        "xtick.major.width":  0.8,
+        "ytick.major.width":  0.8,
+        "axes.grid":     True,
+        "grid.color":    "#DDDDDD",
         "grid.linewidth": 0.5,
-        "grid.alpha":   0.7,
+        "grid.alpha":    0.7,
     })
 
     mask = df["date"] >= start
     d    = df[mask].copy()
 
-    fig, ax1 = plt.subplots(figsize=(16, 7))
+    # Extra bottom margin for the legend
+    fig, ax1 = plt.subplots(figsize=(16, 8))
+    fig.subplots_adjust(bottom=0.22)
     ax2 = ax1.twinx()
 
     # ── colour palette ───────────────────────────────────────────────────────
-    C_POLICY = "#1a3a5c"    # dark navy   – policy rate / ZIG (above threshold)
-    C_BELOW  = "#2b7cb0"    # medium blue – ZIGBL (below threshold)
-    C_SARON  = "#7ab8d9"    # light blue  – SARON
-    C_FREI   = "#d45f00"    # orange      – threshold factor
-    C_ANN    = "#c0392b"    # red         – announcement
-    C_IMP    = "#2ecc71"    # green       – implementation
+    # Rates (LHS)
+    C_POLICY = "#003366"    # dark navy        – SNB policy rate / rate above threshold
+    C_BELOW  = "#4C9BE8"    # medium sky-blue  – rate up to threshold
+    C_SARON  = "#E07B00"    # vivid amber      – SARON (strong, distinct)
+    # RHS series
+    C_FREI   = "#6A0DAD"    # purple/violet    – threshold factor (clearly different from lines below)
+    # Vertical event lines
+    C_ANN    = "#C0392B"    # strong red       – announcement date
+    C_IMP    = "#27AE60"    # green            – implementation date
 
-    # ── rates (LHS) ─────────────────────────────────────────────────────────
+    # ── rates (LHS) — SNB English variable names ──────────────────────────
     ax1.plot(d["date"], d["SARON"],
-             color=C_SARON, linewidth=0.8, alpha=0.7, label="SARON (ON fixing)", zorder=2)
+             color=C_SARON, linewidth=1.2, alpha=0.85,
+             label="SARON fixing at the close of the trading day", zorder=2)
 
     ax1.plot(d["date"], d["ZIG"],
-             color=C_POLICY, linewidth=2.0, label="Rate above threshold (ZIG)", zorder=4)
+             color=C_POLICY, linewidth=2.2,
+             label="Interest rate on sight deposits above threshold", zorder=4)
 
     ax1.plot(d["date"], d["ZIGBL"],
-             color=C_BELOW,  linewidth=1.6, linestyle="--",
-             label="Rate below threshold (ZIGBL)", zorder=3)
+             color=C_BELOW, linewidth=1.8, linestyle="--",
+             label="Interest rate on sight deposits up to threshold", zorder=3)
 
-    # Policy rate / LZ (only from Jun 2019 onwards as formal concept)
+    # SNB policy rate (formally introduced Jun 2019; shown as dash-dot overlay)
     lz_mask = d["LZ"].notna()
     ax1.plot(d.loc[lz_mask, "date"], d.loc[lz_mask, "LZ"],
-             color=C_POLICY, linewidth=2.5, linestyle=(0, (5, 1)),
-             label="SNB Policy Rate (LZ, from Jun 2019)", zorder=5)
+             color=C_POLICY, linewidth=2.8, linestyle=(0, (5, 1)),
+             label="SNB policy rate (from Jun 2019)", zorder=5)
 
-    # ── FREI (RHS) ───────────────────────────────────────────────────────────
+    # ── threshold factor (RHS) ───────────────────────────────────────────────
     ax2.plot(d["date"], d["FREI"],
-             color=C_FREI, linewidth=1.4, linestyle=":", alpha=0.9,
-             label="Threshold factor (FREI, rhs)", zorder=3)
+             color=C_FREI, linewidth=1.6, linestyle=":",
+             label="Threshold factor (rhs)", zorder=3)
 
-    # ── vertical lines: announcements & implementations ───────────────────────
-    dec_mask = (decisions["announce_date"] >= pd.Timestamp(start))
+    # ── vertical event lines ─────────────────────────────────────────────────
+    dec_mask   = decisions["announce_date"] >= pd.Timestamp(start)
+    ann_dates  = sorted(set(decisions.loc[dec_mask, "announce_date"]))
+    impl_dates = sorted(set(decisions.loc[dec_mask, "implement_date"]))
 
-    ann_dates  = decisions.loc[dec_mask, "announce_date"].unique()
-    impl_dates = decisions.loc[dec_mask, "implement_date"].unique()
+    for ad in ann_dates:
+        ax1.axvline(ad,  color=C_ANN, linewidth=0.85, linestyle="--", alpha=0.55, zorder=1)
+    for id_ in impl_dates:
+        ax1.axvline(id_, color=C_IMP, linewidth=0.85, linestyle="-",  alpha=0.45, zorder=1)
 
-    # Deduplication: one announce line even if there are two events on same day
-    for ad in sorted(set(ann_dates)):
-        ax1.axvline(ad, color=C_ANN, linewidth=0.9, linestyle="--", alpha=0.6, zorder=1)
+    # ── zero reference ───────────────────────────────────────────────────────
+    ax1.axhline(0, color="black", linewidth=0.6, linestyle="-", alpha=0.35, zorder=1)
 
-    for id_ in sorted(set(impl_dates)):
-        ax1.axvline(id_, color=C_IMP, linewidth=0.9, linestyle="-",  alpha=0.5, zorder=1)
-
-    # ── reference line at 0 ──────────────────────────────────────────────────
-    ax1.axhline(0, color="black", linewidth=0.6, linestyle="-", alpha=0.4, zorder=1)
-
-    # ── axes formatting ──────────────────────────────────────────────────────
+    # ── axis limits & ticks ──────────────────────────────────────────────────
+    ax1.set_ylim(ylim_left)
+    ax1.yaxis.set_major_locator(MultipleLocator(0.25))
+    ax1.yaxis.set_minor_locator(MultipleLocator(0.125))
     ax1.set_ylabel("Interest rate (%)", fontsize=11)
-    ax2.set_ylabel("Threshold factor (FREI)", fontsize=11, color=C_FREI)
+
+    frei_vals = d["FREI"].dropna()
+    ax2.set_ylim(frei_vals.min() - 3, frei_vals.max() + 5)
+    ax2.yaxis.set_major_locator(MultipleLocator(5))
+    ax2.set_ylabel("Threshold factor", fontsize=11, color=C_FREI)
     ax2.tick_params(axis="y", colors=C_FREI)
     ax2.spines["right"].set_color(C_FREI)
 
@@ -336,49 +350,51 @@ def make_figure(df: pd.DataFrame, decisions: pd.DataFrame,
     ax1.xaxis.set_minor_locator(mdates.MonthLocator(bymonth=[4, 7, 10]))
     ax1.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
     ax1.tick_params(axis="x", which="major", labelsize=10)
+    ax1.set_xlabel("Date", fontsize=10, labelpad=6)
 
-    # y-axis ticks at 25-bp intervals
-    ax1.yaxis.set_major_locator(MultipleLocator(0.25))
-    ax1.yaxis.set_minor_locator(MultipleLocator(0.125))
-
-    # ── legend ────────────────────────────────────────────────────────────────
-    # Rates from ax1
-    handles1, labels1 = ax1.get_legend_handles_labels()
-    # FREI from ax2
-    handles2, labels2 = ax2.get_legend_handles_labels()
-    # Custom lines for announcement / implementation
-    ann_line  = mlines.Line2D([], [], color=C_ANN, linewidth=1.2,
-                               linestyle="--", label="Announcement date")
-    impl_line = mlines.Line2D([], [], color=C_IMP, linewidth=1.2,
-                               linestyle="-",  label="Implementation date")
-
-    ax1.legend(
-        handles=handles1 + handles2 + [ann_line, impl_line],
-        labels=labels1   + labels2  + ["Announcement date", "Implementation date"],
-        loc="upper right", fontsize=8.5, framealpha=0.9,
-        edgecolor="#AAAAAA", ncol=2,
-    )
-
-    # ── titles and labels ─────────────────────────────────────────────────────
-    ax1.set_title(
-        "SNB Monetary Policy & Overnight Repo Market (SARON)\n"
-        "Tiered Sight-Deposit System · Dec 2014 – present",
-        fontsize=13, fontweight="bold", pad=12
-    )
-    ax1.set_xlabel("Date", fontsize=10)
-
-    # ── shaded regions for policy phases ─────────────────────────────────────
+    # ── shaded phase regions ─────────────────────────────────────────────────
     phases = [
-        ("2015-01-22", "2022-06-17", "#e8f4fb", "Negative rate era"),
-        ("2022-06-17", "2025-06-20", "#f0faf0", "Tightening / easing cycle"),
-        ("2025-06-20", str(d["date"].max().date()), "#fff8e1", "Post-zero era"),
+        ("2015-01-22", "2022-06-17", "#ddeef9", "Negative rate era"),
+        ("2022-06-17", "2025-06-20", "#e8f7e8", "Tightening / easing cycle"),
+        ("2025-06-20", str(d["date"].max().date()), "#fff5db", "Post-zero era"),
     ]
-    ymin, ymax = ax1.get_ylim()
     for s, e, col, lbl in phases:
         ax1.axvspan(pd.Timestamp(s), pd.Timestamp(e),
-                    alpha=0.12, color=col, zorder=0)
+                    alpha=0.18, color=col, zorder=0, label=f"_{lbl}")
 
-    fig.tight_layout()
+    # ── title ────────────────────────────────────────────────────────────────
+    ax1.set_title(
+        "SNB Monetary Policy & Overnight Repo Market (SARON)\n"
+        "Tiered Sight-Deposit Remuneration System · Dec 2014 – present",
+        fontsize=13, fontweight="bold", pad=12,
+    )
+
+    # ── legend below the axes ────────────────────────────────────────────────
+    handles1, labels1 = ax1.get_legend_handles_labels()
+    # Filter out phase-shading entries (prefixed with "_")
+    pairs1 = [(h, l) for h, l in zip(handles1, labels1) if not l.startswith("_")]
+
+    handles2, labels2 = ax2.get_legend_handles_labels()
+
+    ann_line  = mlines.Line2D([], [], color=C_ANN, linewidth=1.3,
+                               linestyle="--", label="Announcement date")
+    impl_line = mlines.Line2D([], [], color=C_IMP, linewidth=1.3,
+                               linestyle="-",  label="Implementation date")
+
+    all_handles = [h for h, _ in pairs1] + handles2 + [ann_line, impl_line]
+    all_labels  = [l for _, l in pairs1] + labels2  + \
+                  ["Announcement date", "Implementation date"]
+
+    fig.legend(
+        handles=all_handles, labels=all_labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.01),
+        ncol=3,
+        fontsize=8.5,
+        framealpha=0.95,
+        edgecolor="#AAAAAA",
+        handlelength=2.2,
+    )
 
     if save_path:
         fig.savefig(save_path, dpi=150, bbox_inches="tight")
