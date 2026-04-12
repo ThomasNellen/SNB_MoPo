@@ -163,8 +163,18 @@ one time (11\,+\,3\,+\,2).  The target outstanding volume is set annually; in
   \item \textbf{Auction type}: rate tender with single-price (Dutch) allocation
     --- all successful bidders receive the same marginal price.  Non-competitive
     (price-less) bids are accepted up to a cap.
-  \item \textbf{Settlement}: \textbf{T+2} (Thursday value date in the standard
-    case).
+  \item \textbf{Settlement}: two bank working days after the auction date
+    (\textbf{T+2}; Thursday value date in the standard case), with possible
+    exceptions around public holidays.\footnote{SNB, \textit{Settlement of SNB
+    repo transactions and SNB Bills to remain unchanged at T+2 even after
+    migration to T+1 settlement cycle}, circular letter, 30 March 2026
+    (Department III, Money Market and Foreign Exchange): ``The Federal Finance
+    Administration is also maintaining the status quo with regard to the
+    settlement cycles for the issuance of money market debt register claims
+    (MMDRCs) and Confederation bonds.''  Switzerland's broader migration to a
+    T+1 settlement cycle for exchange-traded securities is planned for
+    11 October 2027 (aligned with the EU/EEA and UK); GMBF and Confederation
+    bond issuance are explicitly excluded from this shortening.}
   \item \textbf{Issuance at discount}: each auction produces a \emph{new} ISIN
     for that specific maturity date, priced below or around par.  A price above
     100 (premium) implies a negative yield.
@@ -215,7 +225,11 @@ CHF\,75\,billion placed on the market (as of Q1\,2026), with 23 live series.
     all accepted bidders pay the marginal price.  Non-competitive bids are
     accepted.
   \item \textbf{Settlement}: approximately \textbf{T+14} (the second Friday
-    after the auction date, or thereabouts).
+    after the auction date, or thereabouts), with possible exceptions around
+    public holidays.\footnote{Ibid.\ The same SNB circular of 30 March 2026
+    confirms that the EFV is maintaining its existing settlement convention for
+    Confederation bond issuances unchanged, notwithstanding the planned T+1
+    migration for exchange-traded securities.}
   \item \textbf{Own holdings (Eigenbestand)}: the EFV may retain a portion of
     the allotment for its own account (column M in the results file).  These
     own-holdings tranches are not counted as ``placed on market'' and are
@@ -282,10 +296,11 @@ Several interactions between Confederation debt issuance and SNB operations
 are worth noting:
 
 \begin{itemize}[leftmargin=1.5em, itemsep=2pt]
-  \item \textbf{Settlement flows}: GMBF settlement (Thursdays) and SNB Bill
-    settlement (also approximately T+4 from Thursdays) both hit the
-    interbank CHF market on similar dates, potentially creating temporary
-    liquidity effects that show up in SARON.
+  \item \textbf{Settlement flows}: GMBF settlement (Thursdays, T+2 from
+    Tuesday auctions) and SNB Bill settlement (Mondays, T+2 from Thursday
+    auctions) both drain CHF liquidity from the banking system on predictable
+    dates each week, potentially creating temporary effects that show up in
+    SARON.
   \item \textbf{Collateral}: Confederation bonds are the primary high-quality
     collateral used in Swiss repo markets (GC basket), meaning they
     underpin both the SNB's monetary-policy repos and private-sector
@@ -317,7 +332,10 @@ ISIN).  Yields stored in per cent per annum; amounts in CHF millions.
   \bottomrule
   \endfoot
   \texttt{auction\_date}         & date  & Date of the auction (Tuesday) \\[3pt]
-  \texttt{settlement\_date}      & date  & Value date, T+2 (Thursday) \\[3pt]
+  \texttt{settlement\_date}      & date  & Value date, T+2 bank working days
+                                           after auction (Thursday in the
+                                           standard case; exceptions possible
+                                           around public holidays) \\[3pt]
   \texttt{maturity\_date}        & date  & Redemption date at par \\[3pt]
   \texttt{term\_days}            & int   & Exact calendar days from settlement
                                            to maturity \\[3pt]
@@ -363,7 +381,10 @@ ISIN).  Yields stored in per cent per annum; amounts in CHF millions.
   \endfoot
   \texttt{auction\_date}          & date  & Date of the auction (2nd Wednesday
                                             of the month) \\[3pt]
-  \texttt{settlement\_date}       & date  & Value date ($\approx$T+14) \\[3pt]
+  \texttt{settlement\_date}       & date  & Value date ($\approx$T+14; exceptions
+                                            possible around public holidays;
+                                            maintained at this convention even
+                                            after T+1 migration) \\[3pt]
   \texttt{maturity\_date}         & date  & Final maturity of the bond \\[3pt]
   \texttt{residual\_maturity\_yrs}& float & Years from auction date to maturity;
                                             derived \\[3pt]

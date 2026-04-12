@@ -198,9 +198,16 @@ thereby shrinking excess reserves for the bill's tenor.
   \item \textbf{Subscription window}: 11:00--11:30 CET/CEST.
   \item \textbf{Auction type}: Variable Rate, American allotment (VR,\,A)---each
     accepted bidder pays their own submitted price.
-  \item \textbf{Settlement}: payment four calendar days after the auction
-    (\textit{T}\,+\,4); redemption at face value (CHF 1\,000\,000 per bill) on
-    the maturity date.
+  \item \textbf{Settlement}: payment two bank working days after the auction
+    date (\textit{T}\,+\,2), with possible exceptions around public holidays;
+    redemption at face value (CHF 1\,000\,000 per bill) on the maturity date.%
+    \footnote{SNB, \textit{Settlement of SNB repo transactions and SNB Bills to
+    remain unchanged at T+2 even after migration to T+1 settlement cycle},
+    circular letter, 30 March 2026 (Department III, Money Market and Foreign
+    Exchange).  The circular confirms that even after Switzerland's planned
+    migration to the T+1 settlement cycle for exchange-traded securities
+    (effective 11 October 2027, aligned with the EU/EEA and UK), SNB Bills and
+    SNB repo transactions will remain at T+2.}
   \item \textbf{Maturities}: two tranches per week, always including a
     \textbf{28-day} tranche.  The second tranche rotates across
     84\,d\,$\to$\,168\,d\,$\to$\,84\,d\,$\to$\,336\,d in a roughly four-week
@@ -258,7 +265,11 @@ bank's perspective).
     (approximately quarterly).
   \item \textbf{Standard term}: 7 calendar days (occasionally 14 days
     around holidays or policy meetings).
-  \item \textbf{Settlement}: payment T+2; redemption T+2+term.
+  \item \textbf{Settlement}: payment two bank working days after the auction
+    date (T+2), with possible exceptions around public holidays; redemption
+    T+2+term.\footnote{Ibid.\ The same SNB circular of 30 March 2026 confirms
+    that term repo settlement remains at T+2 following Swiss interbank market
+    standards set by SIX Repo Ltd (announcement of 10 November 2025).}
   \item \textbf{Auction type}: Variable Rate, American allotment (VR,\,A).
   \item \textbf{Holiday closures}: no auction on Swiss public holidays; gaps
     also around Easter, Ascension, and Whitsun.
@@ -358,7 +369,9 @@ One row per ISIN per auction; 393 rows covering August 2022 to April 2026.
   \texttt{denomination\_chf}     & integer & Face value per bill (CHF 1\,000\,000) \\
   \texttt{issuance\_type}        & string  & \texttt{N}\,=\,new ISIN; \texttt{A}\,=\,tap \\
   \texttt{term\_days}            & integer & Exact calendar days from payment to redemption \\
-  \texttt{payment\_date}         & date    & Settlement date (T+4) \\
+  \texttt{payment\_date}         & date    & Settlement date (T+2 bank working
+                                             days after auction; exceptions
+                                             possible around public holidays) \\
   \texttt{redemption\_date}      & date    & Maturity date \\
   \texttt{auction\_type}         & string  & Always ``VR,\,A'' (variable rate, American) \\
   \texttt{marginal\_price\_pct}  & float   & Marginal accepted price as \% of face value \\
