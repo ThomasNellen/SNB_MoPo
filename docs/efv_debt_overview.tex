@@ -1,0 +1,473 @@
+\documentclass[12pt,a4paper]{article}
+
+% ── packages ──────────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+
+% ── colours ───────────────────────────────────────────────────────────────────
+\definecolor{snbblue}{HTML}{1F6FB2}
+\definecolor{charcoal}{HTML}{2C2C2C}
+\definecolor{midgray}{HTML}{888888}
+\definecolor{lightgray}{HTML}{F5F5F5}
+
+% ── hyperref ──────────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = snbblue,
+  urlcolor   = snbblue,
+  citecolor  = snbblue,
+  pdftitle   = {Swiss Confederation Debt Issuance: Instruments and Data},
+  pdfauthor  = {SNB\_MoPo project},
+}
+
+% ── headers ───────────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textcolor{midgray}{\small SNB\_MoPo project}}
+\lhead{\textcolor{midgray}{\small Swiss Confederation Debt Issuance}}
+\rfoot{\textcolor{midgray}{\small \thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── section formatting ────────────────────────────────────────────────────────
+\titleformat{\section}{\large\bfseries\color{charcoal}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{snbblue}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\itshape\color{charcoal}}{}{0em}{}
+
+% ── custom column types ───────────────────────────────────────────────────────
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\begin{center}
+  {\LARGE\bfseries Swiss Confederation Debt Issuance}\\[0.4em]
+  {\large Instruments, Practices, and Data}\\[1.2em]
+  {\normalsize SNB\_MoPo project \quad|\quad
+   \href{https://github.com/ThomasNellen/SNB_MoPo}{github.com/ThomasNellen/SNB\_MoPo}}\\[0.3em]
+  {\small\textcolor{midgray}{Data vintage: April 2026 \quad|\quad
+   Source: EFV / Federal Finance Administration}}
+\end{center}
+
+\vspace{0.5em}
+\hrule height 1pt
+\vspace{1.5em}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Institutional Framework}
+% ─────────────────────────────────────────────────────────────────────────────
+
+The \textbf{Federal Finance Administration} (EFV --- Eidgenössische Finanz\-verwaltung
+/ Administration fédérale des finances) manages the Swiss Confederation's
+financing needs.  It issues debt in two maturity segments:
+
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item \textbf{Money market}: Geldmarktbuchforderungen (GMBF), maturities up
+    to one year.
+  \item \textbf{Capital market}: Confederation bonds (Eidgenössische Anleihen),
+    maturities from approximately 4 to 50 years.
+\end{itemize}
+
+\subsection{The SNB as Fiscal Agent}
+
+The Swiss National Bank (SNB) acts as the Confederation's fiscal agent and
+\emph{bank}.  In this role it:
+
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item Manages the Confederation's sight-deposit account at the SNB (the
+    federal treasury account).
+  \item Operates the auction platform for both GMBF and bond issuances on
+    behalf of the EFV.
+  \item Conducts settlement of issuance proceeds and redemption payments.
+  \item Holds and administers the Confederation's \emph{own holdings}
+    (Eigenbestand) --- tranches retained at issuance and placed opportunistically
+    at a later date.
+\end{itemize}
+
+\subsection{The Auction Platform}
+
+All issuances take place on the \textbf{SIX Repo Ltd} platform (formerly the
+Swiss repo system operated by SIX), using a uniform electronic tender
+process.  Eligible participants are banks and securities dealers domiciled in
+Switzerland, and --- for bond auctions --- Swiss insurance companies.  The SNB
+controls access and operates the technical infrastructure; EFV sets the
+issuance parameters (volume, maturities, minimum price or yield).
+
+\medskip
+\noindent The same platform hosts the SNB's own monetary-policy repo operations
+(see the companion document \texttt{snb\_mopo\_overview.pdf}).  Both the
+Confederation's debt auctions and the SNB's daily liquidity operations are
+conducted in this single electronic marketplace.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Geldmarktbuchforderungen (GMBF)}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{What They Are}
+
+GMBF (literally ``money-market book-entry claims'') are short-term, \emph{zero-coupon}
+debt instruments issued by the Swiss Confederation at a discount and redeemed
+at face value (CHF\,100) on the maturity date.  They are
+book-entry securities (no physical certificate) held in the SIX Securities
+Services central depository, and they trade in the secondary market, though
+liquidity there is thin.
+
+\subsection{Maturities and Target Stock}
+
+Three standard tenors are in regular use:
+
+\begin{center}
+\begin{tabular}{cccc}
+  \toprule
+  Tenor & Approximate days & Typical ISIN count & Rotation \\
+  \midrule
+  3-month  & $\sim$91 days  & 11 outstanding & Weekly \\
+  6-month  & $\sim$182 days &  3 outstanding & Monthly (roughly) \\
+  12-month & $\sim$364 days &  2 outstanding & Bimonthly (roughly) \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent The EFV targets a total of \textbf{16 GMBF series} outstanding at any
+one time (11\,+\,3\,+\,2).  The target outstanding volume is set annually; in
+2025 it was CHF\,8--14\,billion, with actual year-end stock of CHF\,8.4\,bn.
+
+\subsection{Auction Mechanics}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item \textbf{Frequency}: every \textbf{Tuesday} (with rare exceptions for
+    public holidays, when the auction shifts to Wednesday).
+  \item \textbf{Subscription window}: \textbf{10:00--10:30 CET/CEST} on the
+    SIX Repo Ltd platform.
+  \item \textbf{Auction type}: rate tender with single-price (Dutch) allocation
+    --- all successful bidders receive the same marginal price.  Non-competitive
+    (price-less) bids are accepted up to a cap.
+  \item \textbf{Settlement}: \textbf{T+2} (Thursday value date in the standard
+    case).
+  \item \textbf{Issuance at discount}: each auction produces a \emph{new} ISIN
+    for that specific maturity date, priced below or around par.  A price above
+    100 (premium) implies a negative yield.
+  \item \textbf{Results publication}: the EFV publishes full results
+    (price, yield, bids, allotment) on its website immediately after the
+    auction; the annual XLSX is updated weekly.
+\end{itemize}
+
+\subsection{Pricing and Yields}
+
+GMBF yields closely track the SNB policy rate at the corresponding tenor.
+During the negative-rate era (2015--2022) GMBF yields were consistently
+negative, with the 3-month yield typically around $-0.75$\% p.a.\
+(matching the SNB policy rate); from mid-2022 to end-2024 they turned
+positive, peaking around $+1.8$\% p.a.; they have returned to slightly
+negative territory in 2025--2026 following the SNB's rate cuts.
+
+The bid-to-cover ratio on the 3-month tranche is typically \textbf{3--6$\times$},
+reflecting strong institutional demand.  The 6- and 12-month tranches
+attract somewhat lower cover ratios.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Confederation Bonds (Eidgenössische Anleihen)}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{What They Are}
+
+Confederation bonds are long-term, fixed-rate bullet bonds issued by the
+Swiss Confederation.  They pay an annual coupon and are redeemed at par at
+maturity.  Maturities range from approximately \textbf{4 to 50 years}, making
+Switzerland one of the few sovereign issuers with a regularly issued
+ultra-long segment.  Outstanding volume across all series totals approximately
+CHF\,75\,billion placed on the market (as of Q1\,2026), with 23 live series.
+
+\subsection{Auction Mechanics}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item \textbf{Frequency}: \textbf{monthly}, on the \textbf{second Wednesday}
+    of each month.  August is excluded; October and December auctions are
+    optional depending on financing needs.  This gives 9--11 auctions per year.
+  \item \textbf{Subscription window}: \textbf{10:30--11:00 CET/CEST} on the
+    SIX Repo Ltd platform.
+  \item \textbf{Two tranches per auction}: each auction reopens exactly two
+    existing bond series (tap issuances / Aufstockungen).  This concentrates
+    liquidity in a small number of benchmark series rather than creating many
+    small illiquid lines.
+  \item \textbf{Auction type}: price tender with uniform (Dutch) pricing ---
+    all accepted bidders pay the marginal price.  Non-competitive bids are
+    accepted.
+  \item \textbf{Settlement}: approximately \textbf{T+14} (the second Friday
+    after the auction date, or thereabouts).
+  \item \textbf{Own holdings (Eigenbestand)}: the EFV may retain a portion of
+    the allotment for its own account (column M in the results file).  These
+    own-holdings tranches are not counted as ``placed on market'' and are
+    subsequently sold bilaterally at prevailing market prices when demand
+    arises (see Section~\ref{sec:own}).
+  \item \textbf{Results publication}: the EFV releases results immediately
+    after the auction.  The annual XLSX is updated after each monthly auction.
+\end{itemize}
+
+\subsection{Series Management and Reopenings}
+
+Rather than issuing a new ISIN at each auction, the EFV builds up each
+series progressively through multiple tap issuances over several years until
+the desired benchmark size is reached (typically CHF\,3--6\,billion placed
+on market).  A new series is started (identified by a provisional ISIN that
+becomes definitive at first settlement) only occasionally, when the maturity
+profile requires filling a gap.
+
+Bond names follow the convention \textbf{``Eidg.\,DD.MM.YY/YY''}, where the
+first date is the first settlement date and the last two digits are the
+maturity year (e.g.\ ``Eidg.\,23.06.21/35'' = Confederation bond first
+settled 23 June 2021, maturing 2035).
+
+\subsection{Own Holdings and Bilateral Sales}
+\label{sec:own}
+
+At each auction the EFV may choose not to place the full allotment with market
+participants, retaining a portion as \emph{own holdings}.  These are recorded
+in the auction results as ``Additional own holdings not yet placed.''  The
+retained volume is subsequently sold bilaterally at market prices, typically
+at the request of a specific counterparty.  These transactions are not
+separately announced; they are disclosed only in the EFV's annual activity
+report as aggregate figures (e.g.\ CHF\,138\,mn across 4 transactions in 2025).
+
+This mechanism is functionally similar to a private placement in that it
+involves a direct transaction between the EFV and a single counterparty at
+a negotiated price, but it uses existing (already-issued) ISINs rather than
+creating new ones.
+
+\subsection{Yield Levels}
+
+Swiss Confederation bonds trade at among the lowest yields in the world,
+reflecting the AAA-rated sovereign's safe-haven status and the structural
+CHF demand.  Yields have fluctuated substantially over the dataset period:
+
+\begin{center}
+\begin{tabular}{lcc}
+  \toprule
+  Period & 10-year range (approx.) & Dominant driver \\
+  \midrule
+  2011--2014 & 0.5\%--1.5\% & Euro-area crisis / safe-haven flows \\
+  2015--2021 & $-0.5$\%--0\%  & SNB negative rates, QE spillovers \\
+  2022--2023 & 0\%--1.5\%   & Global rate normalisation \\
+  2024--2026 & 0.2\%--0.8\% & SNB easing cycle \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Relationship to SNB Monetary Policy}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Several interactions between Confederation debt issuance and SNB operations
+are worth noting:
+
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item \textbf{Settlement flows}: GMBF settlement (Thursdays) and SNB Bill
+    settlement (also approximately T+4 from Thursdays) both hit the
+    interbank CHF market on similar dates, potentially creating temporary
+    liquidity effects that show up in SARON.
+  \item \textbf{Collateral}: Confederation bonds are the primary high-quality
+    collateral used in Swiss repo markets (GC basket), meaning they
+    underpin both the SNB's monetary-policy repos and private-sector
+    short-term funding.  New issuances expand the collateral pool available
+    to the banking system.
+  \item \textbf{Yield curve}: the SNB's policy rate anchors the short end;
+    Confederation bond auctions reveal the long end.  The slope reflects
+    market expectations about future SNB rates and the term premium.
+  \item \textbf{Coordination}: while EFV and SNB act independently, the
+    publication of the annual GMBF and bond issuance calendars allows
+    money-market participants to anticipate supply and manage their
+    portfolio duration.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Variable Definitions}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{GMBF Auction Results (\texttt{efv\_gmbf\_auctions.csv})}
+
+746 auction rows covering January 2012 to April 2026 (one row per auction per
+ISIN).  Yields stored in per cent per annum; amounts in CHF millions.
+
+\begin{longtable}{L{4.0cm} L{2.3cm} L{7.5cm}}
+  \toprule
+  \textbf{Column} & \textbf{Type} & \textbf{Description} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  \texttt{auction\_date}         & date  & Date of the auction (Tuesday) \\[3pt]
+  \texttt{settlement\_date}      & date  & Value date, T+2 (Thursday) \\[3pt]
+  \texttt{maturity\_date}        & date  & Redemption date at par \\[3pt]
+  \texttt{term\_days}            & int   & Exact calendar days from settlement
+                                           to maturity \\[3pt]
+  \texttt{term\_bucket}          & str   & Rounded tenor: \texttt{91d}
+                                           ($\leq$100\,d), \texttt{182d}
+                                           ($\leq$200\,d), \texttt{364d}
+                                           (otherwise) \\[3pt]
+  \texttt{series}                & float & Legacy series number (2012--2025
+                                           only; \texttt{NaN} from 2026
+                                           when dropped by EFV) \\[3pt]
+  \texttt{isin}                  & str   & ISIN of the specific maturity
+                                           (CH\ldots) \\[3pt]
+  \texttt{total\_bids\_chf\_mn}  & float & Aggregate bids submitted
+                                           (CHF mn) \\[3pt]
+  \texttt{bids\_no\_price\_chf\_mn} & float & Non-competitive bids (without
+                                           price indication; CHF mn);
+                                           always fully accepted \\[3pt]
+  \texttt{issue\_volume\_chf\_mn}& float & Amount allotted to market
+                                           (CHF mn) \\[3pt]
+  \texttt{bid\_cover}            & float & Bid-to-cover ratio
+                                           $= \text{total bids} /
+                                           \text{issue volume}$;
+                                           derived \\[3pt]
+  \texttt{price}                 & float & Single marginal price
+                                           (\% of face value; e.g.\
+                                           100.019 or 99.912) \\[3pt]
+  \texttt{yield\_pct}            & float & Annualised yield at the marginal
+                                           price (\% p.a.); negative when
+                                           price $>$ 100 \\
+\end{longtable}
+
+\subsection{Bond Auction Results (\texttt{efv\_bond\_auctions.csv})}
+
+297 tranche rows across 167 auction dates, covering November 2010 to April
+2026 (two rows per auction date, one per reopened series).
+
+\begin{longtable}{L{4.4cm} L{2.3cm} L{7.1cm}}
+  \toprule
+  \textbf{Column} & \textbf{Type} & \textbf{Description} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  \texttt{auction\_date}          & date  & Date of the auction (2nd Wednesday
+                                            of the month) \\[3pt]
+  \texttt{settlement\_date}       & date  & Value date ($\approx$T+14) \\[3pt]
+  \texttt{maturity\_date}         & date  & Final maturity of the bond \\[3pt]
+  \texttt{residual\_maturity\_yrs}& float & Years from auction date to maturity;
+                                            derived \\[3pt]
+  \texttt{prov\_isin}             & str   & Provisional ISIN (becomes the
+                                            definitive ISIN at settlement;
+                                            ``\texttt{-}'' for new series in
+                                            some recent rows) \\[3pt]
+  \texttt{fungible\_isin}         & str   & ISIN of the existing benchmark
+                                            series this tranche is fungible
+                                            with (i.e.\ same bond, different
+                                            settlement) \\[3pt]
+  \texttt{bond\_name}             & str   & EFV bond label, format
+                                            ``Eidg.\,DD.MM.YY/YY'' \\[3pt]
+  \texttt{coupon\_pct}            & float & Annual coupon rate (\% p.a.;
+                                            0 = zero-coupon bond) \\[3pt]
+  \texttt{total\_bids\_chf\_mn}   & float & Aggregate bids (CHF mn) \\[3pt]
+  \texttt{bids\_no\_price\_chf\_mn} & float & Non-competitive bids (CHF mn) \\[3pt]
+  \texttt{issue\_volume\_chf\_mn} & float & Amount placed on market (CHF mn);
+                                            excludes own holdings \\[3pt]
+  \texttt{bid\_cover}             & float & Bid-to-cover ratio; derived \\[3pt]
+  \texttt{price}                  & float & Marginal price (\% of face value) \\[3pt]
+  \texttt{yield\_pct}             & float & Yield to maturity at marginal price
+                                            (\% p.a.) \\[3pt]
+  \texttt{own\_holdings\_not\_placed\_chf\_mn} & float & Volume retained by the
+                                            Confederation as own holdings
+                                            at this auction (CHF mn);
+                                            sold bilaterally later \\
+\end{longtable}
+
+\subsection{Outstanding Bonds Snapshot (\texttt{efv\_bonds\_outstanding.csv})}
+
+One row per live bond series; snapshot dated 31 March 2026.  23 series with a
+combined placed volume of CHF\,75.4\,bn and CHF\,6.9\,bn own holdings still
+available for bilateral sale.
+
+\begin{center}
+\begin{tabular}{L{5.0cm} L{2.2cm} L{6.6cm}}
+  \toprule
+  \textbf{Column} & \textbf{Type} & \textbf{Description} \\
+  \midrule
+  \texttt{isin} & str & Definitive ISIN (CH\ldots) \\[3pt]
+  \texttt{bond\_name} & str & EFV bond label \\[3pt]
+  \texttt{maturity\_date} & date & Final maturity \\[3pt]
+  \texttt{coupon\_pct} & float & Annual coupon (\%) \\[3pt]
+  \texttt{total\_issued\_incl\_own\_chf\_mn} & float &
+    Total volume issued including all own holdings ever issued (CHF mn) \\[3pt]
+  \texttt{total\_placed\_on\_market\_chf\_mn} & float &
+    Volume placed with market participants (excl.\ own holdings; CHF mn) \\[3pt]
+  \texttt{own\_holdings\_placed\_chf\_mn} & float &
+    Own holdings that have been placed bilaterally since first issuance
+    (CHF mn) \\[3pt]
+  \texttt{own\_holdings\_available\_chf\_mn} & float &
+    Own holdings still held by the Confederation and available for future
+    bilateral sale (CHF mn) \\[3pt]
+  \texttt{snapshot\_date} & date & Reference date of the snapshot \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Data Sources and Reproducibility}
+% ─────────────────────────────────────────────────────────────────────────────
+
+All data are hosted by the EFV at
+\url{https://www.efv.admin.ch/efv/en/home/finanzberichterstattung/}.
+The SNB website (\url{https://www.snb.ch/en/the-snb/mandates-goals/services-to-the-confederation})
+links to the same EFV files and publishes individual press releases for each
+bond auction.  \textbf{No API or CSV endpoint exists}; all machine-readable data
+is in XLSX format only.
+
+\begin{center}
+\begin{tabular}{L{3.5cm} L{10.5cm}}
+  \toprule
+  \textbf{Dataset} & \textbf{Direct download URL} \\
+  \midrule
+  GMBF auction results &
+    \url{https://www.efv.admin.ch/dam/en/sd-web/d9FElh8dV0db/resultate-gmbf.xlsx} \\[4pt]
+  Bond auction results &
+    \url{https://www.efv.admin.ch/dam/en/sd-web/AFFQnqhWiEVW/resultate-anleihen.xlsx} \\[4pt]
+  Outstanding bonds &
+    \url{https://www.efv.admin.ch/dam/en/sd-web/K9gjjBZzAoPz/ausstehende-anleihen.xlsx} \\[4pt]
+  GMBF issuance calendar &
+    \url{https://www.efv.admin.ch/dam/en/sd-web/962GRmuHDjrK/GMBF-Kalender-2026.pdf} \\[4pt]
+  Bond issuance calendar &
+    \url{https://www.efv.admin.ch/dam/en/sd-web/kb0UBOFNnfjG/Kalender-Anleihen-2026.pdf} \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent The download and parsing script is at
+\texttt{code/efv\_debt\_analysis.py} in the project repository.  Running it
+from the project root reproduces all three processed datasets from scratch.
+Raw XLSX files are cached in \texttt{input/raw/} (gitignored) and only
+re-downloaded if absent.
+
+\medskip
+\noindent\textbf{Update cadence:}
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item GMBF file: updated every Tuesday after the auction.
+  \item Bond file: updated after each monthly auction (second Wednesday).
+  \item Outstanding bonds: updated by EFV periodically; typically reflects
+    end of previous quarter.
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\end{document}
